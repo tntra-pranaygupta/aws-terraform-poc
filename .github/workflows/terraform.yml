@@ -1,0 +1,56 @@
+name: Terraform CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  TF_VERSION: "1.8.0"
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  terraform-dev:
+    name: "Terraform Plan — dev"
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      # 3. Configure AWS credentials from secrets
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 4. terraform init
+      - name: Terraform Init
+        run: terraform init
+
+      # 5. Check formatting (fails if code is messy)
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      # 6. Validate configuration
+      - name: Terraform Validate
+        run: terraform validate
+
+      # 7. Plan for dev environment
+      - name: Terraform Plan (dev)
+        run: terraform plan -var-file="envs/dev.tfvars" -no-color
+        continue-on-error: false
