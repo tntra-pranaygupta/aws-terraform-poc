@@ -36,7 +36,7 @@ variable "private_subnet_cidrs" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t2.micro"   # Free tier eligible
+  default     = "t2.micro" # Free tier eligible
 }
 
 variable "key_pair_name" {
