@@ -44,3 +44,23 @@ variable "key_pair_name" {
   type        = string
   default     = ""
 }
+
+variable "asg_min" {
+  type    = number
+  default = 1
+}
+
+variable "asg_max" {
+  type    = number
+  default = 3
+}
+
+variable "asg_desired" {
+  type    = number
+  default = 2
+}
+
+variable "deploy_docker" {
+  type    = bool
+  default = false
+}

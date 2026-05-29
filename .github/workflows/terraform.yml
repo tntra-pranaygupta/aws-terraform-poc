@@ -40,7 +40,12 @@ jobs:
 
       # 4. terraform init
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
+            -backend-config="key=dev/terraform.tfstate" \
+            -backend-config="region=ap-south-1" \
+            -backend-config="dynamodb_table=terraform-state-lock"
 
       # 5. Check formatting (fails if code is messy)
       - name: Terraform Format Check
